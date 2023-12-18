@@ -30,7 +30,7 @@ Item {
     
     property alias cfg_sourceInsteadofSink: sourceInsteadofSink.checked
 
-    property string cfg_defaultIconName: null
+    property string cfg_defaultIconName: ""
 
     ColumnLayout {
         Layout.fillWidth: true
