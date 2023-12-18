@@ -103,7 +103,7 @@ Item {
                 enabled: currentPort !== null
 
                 text: labeling != 2 ? currentDescription : ""
-                iconName: labeling != 1 ? formFactorIcon(sink.formFactor, defaultIconName) : ""
+                iconName: labeling != 1 ? formFactorIcon(pulseObject.formFactor, defaultIconName) : ""
 
                 checkable: true
                 exclusiveGroup: buttonGroup
@@ -114,18 +114,18 @@ Item {
                 Layout.preferredWidth: -1
 
 
-                readonly property var sink: model.PulseObject
+                readonly property var pulseObject: model.PulseObject
                 readonly property var currentPort: model.Ports[ActivePortIndex]
                 readonly property string currentDescription: usePortDescription ? currentPort ? currentPort.description : model.Description : model.Description
 
                 Binding {
                     target: tab
                     property: "checked"
-                    value: sink.default
+                    value: pulseObject.default
                 }
 
                 onClicked: {
-                    sink.default = true
+                    pulseObject.default = true
                 }
             }
         }
