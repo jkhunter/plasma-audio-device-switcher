@@ -42,9 +42,22 @@ Item {
     property bool useVerticalLayout: plasmoid.configuration.useVerticalLayout
 
     property bool sourceInsteadofSink: plasmoid.configuration.sourceInsteadofSink
-    property var sinkModel: SinkModel {}
-    property var sourceModel: SourceModel {}
-    property var selectedModel: sourceInsteadofSink ? sourceModel : sinkModel
+
+    readonly property var sinkModelFiltered: PulseObjectFilterModel {
+        id: sinkModelFiltered
+        filters: []
+        filterOutInactiveDevices: true  // ← This avoids showing devices that can't be selected.
+        filterVirtualDevices: false
+        sourceModel: SinkModel {}
+    }
+    readonly property var sourceModelFiltered: PulseObjectFilterModel {
+        id: sourceModelFiltered
+        filters: []
+        filterOutInactiveDevices: true  // ← This avoids showing devices that can't be selected.
+        filterVirtualDevices: false
+        sourceModel: SourceModel {}
+    }
+    property var filteredModel: sourceInsteadofSink ? sourceModelFiltered : sinkModelFiltered
 
     property string defaultIconName: plasmoid.configuration.defaultIconName
 
@@ -96,7 +109,7 @@ Item {
         }
 
         Repeater {
-            model: selectedModel
+            model: filteredModel
 
             delegate: PlasmaComponents.Button {
                 id: tab
