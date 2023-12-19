@@ -35,7 +35,12 @@ More than one year after the last commit on that original repository, [lolcabano
 
 Almost one year later [denilsonsa's fork](https://github.com/denilsonsa/plasma-audio-device-switcher) merged [one other pull request](https://github.com/akrutzler/plasma-audio-device-switcher/pull/13), and implemented further improvements.
 
-With thanks to [davidosomething](https://github.com/davidosomething/plasma-audio-device-switcher/commit/53b387127763f3780215c90371d5de3c01fefe7d), [xpt3](https://github.com/xpt3/plasma-audio-device-switcher/commit/09b32256baaf9b1af7a1d67f6bbf65433a9696bb), [Phen-Ro](https://github.com/Phen-Ro/plasma-audio-device-switcher/commit/788e4376ba2e723d65a812ef90e21ef93fde9c33). [emvaized](https://github.com/emvaized/plasma-audio-device-switcher/commit/8498d7ab7e2d6b3e88f14d811084ad06b911282f).
+With thanks to
+[davidosomething](https://github.com/davidosomething/plasma-audio-device-switcher/commit/53b387127763f3780215c90371d5de3c01fefe7d),
+[emvaized](https://github.com/emvaized/plasma-audio-device-switcher/commit/8498d7ab7e2d6b3e88f14d811084ad06b911282f),
+[Phen-Ro](https://github.com/Phen-Ro/plasma-audio-device-switcher/commit/788e4376ba2e723d65a812ef90e21ef93fde9c33),
+[plachste](https://github.com/plachste/plasma-audio-device-switcher/commit/97c17a4b845197cb8276e2698c131a3bea268d10),
+[xpt3](https://github.com/xpt3/plasma-audio-device-switcher/commit/09b32256baaf9b1af7a1d67f6bbf65433a9696bb).
 
 ## Future
 
