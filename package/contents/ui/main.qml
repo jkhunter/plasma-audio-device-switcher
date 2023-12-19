@@ -255,7 +255,7 @@ Item {
         Repeater {
             model: filteredModel
 
-            delegate: PlasmaComponents.Button {
+            delegate: PlasmaComponents.ToolButton {
                 id: tab
                 enabled: currentPort !== null
 
