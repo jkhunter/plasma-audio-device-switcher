@@ -45,3 +45,17 @@ With thanks to
 ## Future
 
 I myself won't be able to keep maintaining this code. I'm not sure if I understand it well enough. This project has passed over many hands, and if you are willing to, feel free to adopt it!
+
+## Ideas for new features
+
+* Volume control
+    * [ ] Using the scroll wheel over each button could change the volume level of that device.
+    * [ ] Middle-clicking could mute that device.
+    * [ ] Muted devices could have a different background color or different effect. (For the icons-only view; because the "(muted)" text is already shown.)
+    * [ ] We could have a background bar representing the volume level of each device.
+* Other features
+    * [ ] Somehow be able to [switch audio profiles](https://github.com/akrutzler/plasma-audio-device-switcher/issues/9). I have no idea how to make it useful while keeping the interface simple.
+    * [ ] Add [Open Audio Volume Settings to the context menu](https://github.com/akrutzler/plasma-audio-device-switcher/issues/6)
+* Visual features
+    * [ ] Let [the background to be transparent](https://github.com/akrutzler/plasma-audio-device-switcher/issues/8), as well as disabling the background.
+    * [ ] The vertical layout should be the default (due to very long device names). Or the icons-only horizontal layout.
