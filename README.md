@@ -1,4 +1,4 @@
-# plasma-audio-device-switcher
+# Audio Device Switcher NG
 
 Simple KDE/Plasma widget (plasmoid) to change the default audio output device (sink) or the default audio input device (source).
 
