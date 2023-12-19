@@ -58,7 +58,6 @@ Item {
 
         CheckBox {
             id: usePortDescription
-            enabled: cfg_labeling != 2 // "Icon only"
             text: i18n("Use the port description rather than the device description")
         }
 
