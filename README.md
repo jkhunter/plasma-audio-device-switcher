@@ -59,3 +59,4 @@ I myself won't be able to keep maintaining this code. I'm not sure if I understa
 * Visual features
     * [ ] Let [the background to be transparent](https://github.com/akrutzler/plasma-audio-device-switcher/issues/8), as well as disabling the background.
     * [ ] The vertical layout should be the default (due to very long device names). Or the icons-only horizontal layout.
+    * [ ] Custom image at the "Add widget" interface.
