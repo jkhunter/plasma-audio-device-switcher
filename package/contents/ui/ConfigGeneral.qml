@@ -80,8 +80,10 @@ Item {
             id: defaultIconName
             model: ListModel {
                     id: cbItems
-                    ListElement { text: "Speakers"; value: "audio-speakers-symbolic" }
+                    ListElement { text: "Speakers"  ; value: "audio-speakers-symbolic" }
                     ListElement { text: "Headphones"; value: "audio-headphones" }
+                    ListElement { text: "Headset"   ; value: "audio-headset" }
+                    ListElement { text: "Microphone"; value: "audio-input-microphone-symbolic" }
                     ListElement { text: "Audio card"; value: "audio-card" }
             }
             onCurrentIndexChanged: cfg_defaultIconName = cbItems.get(currentIndex).value
