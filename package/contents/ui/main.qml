@@ -121,6 +121,19 @@ Item {
                 formFactor: /^computer$/i,
             },
             {
+                icon: "preferences-system-bluetooth",
+                // icon: "network-bluetooth",
+                score: 2,
+                deviceName: /^bluez/i,
+            },
+            {
+                icon: "media-removable-symbolic",
+                // icon: "drive-removable-media-usb",
+                // icon: "drive-removable-media-usb-pendrive",
+                score: 2,
+                deviceName: /^alsa[^.]+\.usb/i,
+            },
+            {
                 icon: "question",
                 score: 1,
                 // The Null output and Null input devices.
@@ -141,7 +154,7 @@ Item {
                 // icon: "microphone",
                 score: 3,
                 formFactor: /^microphone$/i,
-                portName: /^analog-input-microphone(?!-headset)/i,
+                portName: /^analog-input-microphone(?!-headset)|analog-input-mic$/i,
             },
             {
                 icon: "audio-headphones",
