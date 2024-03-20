@@ -73,7 +73,7 @@ PlasmoidItem {
         }
 
         const iconName = device.iconName || device.properties["device.icon_name"] || device.properties["device.icon-name"];
-        if (iconName && !/^audio-card-analog-/.test(iconName)) {
+        if (iconName && !/^audio-card-analog/.test(iconName)) {
             // On my system, `device.properties["device.icon_name"]` is populated, but everything is
             // either "audio-card-analog-usb" or "audio-card-analog-pci", which share the same icon.
             // Let's use the device's declared icon as long as it's populated with something useful.
