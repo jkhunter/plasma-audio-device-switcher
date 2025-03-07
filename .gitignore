@@ -1,5 +1,9 @@
 # C++ objects and libs
 
+.mono/**
+.vscode/**
+deploy.sh
+
 *.slo
 *.lo
 *.o

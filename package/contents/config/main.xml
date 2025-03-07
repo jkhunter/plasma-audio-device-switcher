@@ -22,7 +22,7 @@
       </choices>
     </entry>
 
-    <entry name="naming" type="Enum">
+    <entry name="descriptionType" type="Enum">
       <choices>
         <choice name="deviceDescription">
           <label>Device description</label>
@@ -35,6 +35,10 @@
         </choice>
         <default>deviceDescription</default>
       </choices>
+    </entry>
+
+    <entry name="useWirePlumberConfig" type="Bool">
+      <default>false</default>
     </entry>
 
     <entry name="useVerticalLayout" type="Bool">

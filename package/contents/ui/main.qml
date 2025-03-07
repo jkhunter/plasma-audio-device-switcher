@@ -35,14 +35,12 @@ import QtQuick.Shapes
 
 PlasmoidItem {
     id: main
-
-
     property var currentDeviceHovered: null
  
     preferredRepresentation: fullRepresentation
 
     property int labeling: plasmoid.configuration.labeling
-    property int naming: plasmoid.configuration.naming
+    property int descriptionType: plasmoid.configuration.descriptionType
     property bool useVerticalLayout: plasmoid.configuration.useVerticalLayout
     property bool sourceInsteadofSink: plasmoid.configuration.sourceInsteadofSink
     property string cfg_deviceIconList: String(Plasmoid.configuration.deviceIconList)
@@ -66,16 +64,15 @@ PlasmoidItem {
 
     function getIcon(device, currentPort, description) {
         var icon = Script.getIconFromConfig(cfg_deviceIconList, description)
-        return icon != "" ? icon : Script.formFactorIcon(device, currentPort, defaultIconName)
+        return icon != "" ? icon : Script.formFactorIcon(device, currentPort, defaultIconName, plasmoid.configuration.useWirePlumberConfig)
     }
 
     function volumePercent(volume) {
         return Math.round(volume / PulseAudio.NormalVolume * 100.0);
     }
 
-       function toVolume(percent) {
+    function toVolume(percent) {
         return percent * PulseAudio.NormalVolume / 100
-        //return Math.round(volume / PulseAudio.NormalVolume * 100.0);
     }
 
    // compactRepresentation: CompactIcon{}
@@ -96,7 +93,7 @@ PlasmoidItem {
             delegate: QtControls.ToolButton {
                 readonly property var device: model.PulseObject
                 readonly property var currentPort: model.Ports[ActivePortIndex]
-                readonly property string currentDescription: getNaming(model, device, currentPort)
+                readonly property string currentDescription: Script.getDescription(descriptionType, model, device, currentPort)
 
                 id: tab
                 enabled: currentPort !== null
@@ -115,8 +112,8 @@ PlasmoidItem {
                 PlasmaCore.ToolTipArea {
                     id: toolTip
                     anchors.fill: parent
-                    mainText: tab.currentDescription + (tab.device.muted ? " (muted)" : "")
-                    subText: i18n("Volume at %1%", volumePercent(tab.device.volume));
+                    mainText: tab.currentDescription
+                    subText: tab.device.muted ? i18n("Audio Muted") : i18n("Volume at %1%", volumePercent(tab.device.volume));
                     textFormat: Text.PlainText
                 }
 
@@ -135,11 +132,20 @@ PlasmoidItem {
                     width: parent.width
                     height: parent.height
                     property int offset: 5
+                    
+                    //calculate the offset for line needed to match the icon size
+                    //icons are mostly square, so the size is the width or height
+                    //depends which value is smaller
+                    property int offsetW: Math.max(0, (width-height)/2)
+                    property int offsetH: Math.max(0, (height-width)/2)
                     ShapePath {
                         strokeWidth: 2
                         strokeColor: "red"
-                        startX: ms.offset; startY: ms.offset
-                        PathSvg { path: "L " + ( ms.width - ms.offset ) + " " + ( ms.height - ms.offset ) + " z" }
+
+                        //strokeWidth: 4
+                        //strokeColor: "#E1B9BD" //<< this is the color from pa-pulse applet. but it is in some cases hard to see
+                        startX: ms.offset + ms.offsetW; startY: ms.offset + ms.offsetH
+                        PathSvg { path: "L " + ( ms.width - ms.offset - ms.offsetW ) + " " + ( ms.height - ms.offset - ms.offsetH ) + " z" }
                     }
                     visible: model.Muted
                 }

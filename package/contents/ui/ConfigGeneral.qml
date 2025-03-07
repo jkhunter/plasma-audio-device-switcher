@@ -22,7 +22,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
-import org.kde.kirigamiaddons.formcard as FormCard
 import org.kde.kcmutils as KCM
 import org.kde.kirigamiaddons.formcard as FormCard
 
@@ -32,8 +31,9 @@ KCM.SimpleKCM {
     id: page
     property alias cfg_useVerticalLayout: useVerticalLayout.checked
     property alias cfg_sourceInsteadofSink: sourceInsteadofSink.checked
+    property alias cfg_useWirePlumberConfig: useWirePlumberConfig.checked
     property int cfg_labeling: 0
-    property int cfg_naming: 0
+    property int cfg_descriptionType: 0
     property string cfg_defaultIconName: defaultIconName
 
     readonly property var sinkModel: SinkModel {} // used for description examples, if possible
@@ -54,6 +54,10 @@ KCM.SimpleKCM {
             CheckBox {
                 id: sourceInsteadofSink
                 text: i18n("Control source instead of sink")
+            }
+            CheckBox {
+                id: useWirePlumberConfig
+                text: i18n("Use icons from WirePlumber configuration")
             }
         }
 
@@ -88,18 +92,18 @@ KCM.SimpleKCM {
         }
 
         ColumnLayout {
-            id: naming
+            id: descriptionType
             Kirigami.FormData.label: i18n("Description:")
-            Kirigami.FormData.buddyFor: namingRepeater
+            Kirigami.FormData.buddyFor: descriptionTypeRepeater
 
             Repeater {
-                id: namingRepeater
+                id: descriptionTypeRepeater
                 model: generateDescriptionModel()
                 RadioButton {
                     text: modelData
-                    checked: index === cfg_naming
+                    checked: index === cfg_descriptionType
                     onClicked: {
-                        cfg_naming = index
+                        cfg_descriptionType = index
                     }
                 }
             }

@@ -36,12 +36,29 @@ function getIconFromConfig(configList, description) {
     return ""
 }
 
+function getDescription(type, model, device, port) {
+    // Node nickname, unless it doesn't exist
+    if (type !== 0 && type !== 1 && device.properties) {
+        const nick = device.properties["node.nick"];
+        if (nick) return nick;
+    }
+
+    // Port description, unuless it also doesn't exist
+    if (type !== 0 && port) {
+        const desc = port.description;
+        if (desc) return desc;
+    }
+
+    // Device description and fallback
+    return model.Description;
+}
+
  // Inspired by:
     // https://github.com/KDE/plasma-pa/blob/master/applet/contents/code/icon.js
     // https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/blob/300db779224625144d6279d230c2daa857c967d8/src/modules/alsa/alsa-mixer.c#L2794
     // https://github.com/Apxdono/plasma-audio-device-switcher/commit/762ef92e5129c8b08bd94939bf2e88473217f84e
     
-function formFactorIcon(device, port, fallback) {
+function formFactorIcon(device, port, fallback, useWirePlumberConfig) {
     // On my machine, device.formFactor returns nice values for sources,
     // but mostly useless values for sinks.
     //
@@ -53,7 +70,10 @@ function formFactorIcon(device, port, fallback) {
         port = {}
     }
 
-    const iconName          = device.iconName    || ""  // Usually empty, thus useless
+    let iconName = device.iconName || ""  // Usually empty, thus useless
+    if(useWirePlumberConfig == true) {
+        iconName = device.iconName || device.properties["device.icon_name"] || device.properties["device.icon-name"];
+    }
     if (iconName) {
         return iconName;
     }
