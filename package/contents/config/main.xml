@@ -18,7 +18,7 @@
         <choice name="iconOnly">
           <label>Icon only</label>
         </choice>
-        <default>iconWithDescription</default>
+        <default>iconOnly</default>
       </choices>
     </entry>
 
@@ -48,7 +48,12 @@
     <entry name="defaultIconName" type="String">
       <default>audio-card</default>
     </entry>
-
   </group>
+
+ <group name="Icon">
+    <entry name="deviceIconList" type="StringList">
+        <default></default>
+    </entry>
+ </group> 
 
 </kcfg>

@@ -27,4 +27,9 @@ ConfigModel {
          icon: "plasma"
          source: "ConfigGeneral.qml"
     }
+        ConfigCategory {
+         name: i18n("Icon")
+         icon: "settings-configure"
+         source: "ConfigIcon.qml"
+    }
 }

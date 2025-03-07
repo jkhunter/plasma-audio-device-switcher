@@ -23,22 +23,29 @@ import QtQuick.Layouts 1.0
 import QtQuick.Controls 6.0 as QtControls
 
 import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.plasma.components as PC
 import org.kde.plasma.plasmoid 2.0
 
 // plasma pulseaudio plugin
 import org.kde.plasma.private.volume 0.1
+import org.kde.kirigami as Kirigami
+import "script.js" as Script
+//import org.kde.ksvg as KSvg
+import QtQuick.Shapes
 
 PlasmoidItem {
     id: main
 
-    Layout.minimumWidth: gridLayout.implicitWidth
-    Layout.minimumHeight: gridLayout.implicitHeight
+
+    property var currentDeviceHovered: null
+ 
     preferredRepresentation: fullRepresentation
 
     property int labeling: plasmoid.configuration.labeling
     property int naming: plasmoid.configuration.naming
     property bool useVerticalLayout: plasmoid.configuration.useVerticalLayout
     property bool sourceInsteadofSink: plasmoid.configuration.sourceInsteadofSink
+    property string cfg_deviceIconList: String(Plasmoid.configuration.deviceIconList)
 
     readonly property var sinkModelFiltered: PulseObjectFilterModel {
         id: sinkModelFiltered
@@ -56,229 +63,36 @@ PlasmoidItem {
 
     property string defaultIconName: plasmoid.configuration.defaultIconName
 
-    // Inspired by:
-    // https://github.com/KDE/plasma-pa/blob/master/applet/contents/code/icon.js
-    // https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/blob/300db779224625144d6279d230c2daa857c967d8/src/modules/alsa/alsa-mixer.c#L2794
-    // https://github.com/Apxdono/plasma-audio-device-switcher/commit/762ef92e5129c8b08bd94939bf2e88473217f84e
-    function formFactorIcon(device, port, fallback) {
-        // On my machine, device.formFactor returns nice values for sources,
-        // but mostly useless values for sinks.
-        //
-        // This code here tries to be "smart" and look at multiple sources for
-        // finding the best icon.
 
-        // Some devices (e.g. the Null devices), don't have any ports.
-        if (!port) {
-            port = {}
-        }
-
-        const iconName = device.iconName || device.properties["device.icon_name"] || device.properties["device.icon-name"];
-        if (iconName && !/^audio-card/.test(iconName)) {
-            // On my system, `device.properties["device.icon_name"]` is populated, but everything is
-            // either "audio-card-analog-usb" or "audio-card-analog-pci", which share the same icon.
-            // Let's use the device's declared icon as long as it's populated with something useful.
-            return iconName;
-        }
-
-        const data = {
-            formFactor:        device.formFactor  || "",  // e.g. "internal", "webcam", "microphone"
-            deviceName:        device.name        || "",  // e.g. "alsa_output.pci-0000_00_1f.3.hdmi-stereo-extra1"
-            portName:          port.name          || "",  // e.g. "hdmi-output-1"
-            deviceDescription: device.description || "",  // e.g. "Built-in Audio Digital Stereo (HDMI 2)"
-            portDescription:   port.description   || "",  // e.g. "HDMI / DisplayPort 2"
-        }
-
-        // Removing number suffixes:
-        data.portName = data.portName.replace(/-[0-9]+$/, "")
-
-        // console.log(JSON.stringify(data, null, 2));  // DEBUG
-
-        const rules = [
-            // Generic names and icons. Lowest score.
-            {
-                icon: "audio-card",
-                score: 1,
-                formFactor: /^internal$/i,
-                portName: /^analog-input$|^analog-input-video|^analog-output(-mono)?$/i
-            },
-            {
-                icon: "audio-card",
-                score: 1,
-                // LINE in/out don't have good icons.
-                portName: /^analog-input-linein|^analog-output-lineout|^multichannel-input|^multichannel-output/i
-            },
-            {
-                icon: "portable",
-                score: 2,
-                formFactor: /^portable$/i,
-            },
-            {
-                icon: "computer",
-                // icon: "computer-symbolic",
-                score: 2,
-                formFactor: /^computer$/i,
-            },
-            {
-                icon: "preferences-system-bluetooth",
-                // icon: "network-bluetooth",
-                score: 2,
-                deviceName: /^bluez/i,
-            },
-            {
-                icon: "media-removable-symbolic",
-                // icon: "drive-removable-media-usb",
-                // icon: "drive-removable-media-usb-pendrive",
-                score: 2,
-                deviceName: /^alsa[^.]+\.usb/i,
-            },
-            {
-                icon: "question",
-                score: 1,
-                // The Null output and Null input devices.
-                deviceName: /^null-/i,
-            },
-
-            // Basic audio devices.
-            {
-                icon: "audio-speakers-symbolic",
-                // icon: "speaker",
-                score: 3,
-                formFactor: /^speaker$/i,
-                portName: /^analog-output-speaker/i,
-            },
-            {
-                icon: "audio-input-microphone",
-                // icon: "audio-input-microphone-symbolic",
-                // icon: "microphone",
-                score: 3,
-                formFactor: /^microphone$/i,
-                portName: /^analog-input-microphone(?!-headset)|analog-input-mic$/i,
-            },
-            {
-                icon: "audio-headphones",
-                // icon: "headphone",
-                // icon: "headphones",
-                score: 3,
-                formFactor: /^headphone$/i,
-                portName: /^analog-output-headphones?|^virtual-surround-7.1/i,
-            },
-            {
-                icon: "audio-headset",
-                // icon: "headset",
-                score: 4,
-                formFactor: /^headset$/i,
-                portName: /^analog-input-microphone-headset|^analog-chat-(input|output)|^steelseries-arctis/i,
-            },
-
-            // Mobile phones. Quite unique names.
-            {
-                // icon: "phone",
-                icon: "phone-symbolic",
-                score: 3,
-                formFactor: /^phone$/i,
-            },
-            {
-                icon: "handset",  // Looks just like the "phone" icon.
-                score: 3,
-                formFactor: /^handset$/i,
-            },
-            {
-                icon: "hands-free",
-                score: 3,
-                formFactor: /^hands-free$/i,
-            },
-
-            // A/V devices.
-            {
-                // icon: "video-television",
-                icon: "tv",
-                // icon: "tv-symbolic",
-                score: 4,
-                formFactor: /^tv$/i,
-            },
-            {
-                icon: "video-display",
-                score: 4,
-                portName: /^hdmi-output/i,
-            },
-            {
-                icon: "hifi",
-                score: 4,
-                formFactor: /^hifi$/i,
-                // People using S/PDIF digital signaling are likely using Hi-Fi systems.
-                portName: /^iec958-/i,
-            },
-            {
-                icon: "audio-radio",
-                // icon: "audio-radio-symbolic",
-                // icon: "radio",
-                score: 4,
-                portName: /^analog-input-radio/,
-            },
-            {
-                icon: "camera-web",
-                // icon: "camera-web-symbolic",
-                // icon: "webcam",
-                score: 4,
-                formFactor: /^webcam$/i,
-            },
-
-            // Other devices.
-            {
-                icon: "car",
-                score: 4,
-                formFactor: /^car$/i,
-            },
-        ]
-
-        let icon = fallback || "audio-card"
-        let score = 0
-
-        // This function may be a bit slow if it is called too often.
-        // TODO: Figure out how to cache this result.
-        for (const rule of rules) {
-            for (const attr of Object.keys(data)) {
-                if (rule[attr]) {
-                    // console.log("TESTING", attr, data[attr], rule[attr])  // DEBUG
-                    if (rule[attr].test(data[attr])) {
-                        // console.log("MATCH!", attr, "=", data[attr], "icon=", rule.icon, "score=", rule.score)  // DEBUG
-                        if (rule.score >= score) {
-                            icon = rule.icon
-                            score = rule.score
-                        }
-                    }
-                }
-            }
-        }
-
-        return icon
+    function getIcon(device, currentPort, description) {
+        var icon = Script.getIconFromConfig(cfg_deviceIconList, description)
+        return icon != "" ? icon : Script.formFactorIcon(device, currentPort, defaultIconName)
     }
 
-    function getNaming(model, device, port) {
-        // Node nickname, unless it doesn't exist
-        if (naming !== 0 && naming !== 1 && device.properties) {
-            const nick = device.properties["node.nick"];
-            if (nick) return nick;
-        }
-
-        // Port description, unuless it also doesn't exist
-        if (naming !== 0 && port) {
-            const desc = port.description;
-            if (desc) return desc;
-        }
-
-        // Device description and fallback
-        return model.Description;
+    function volumePercent(volume) {
+        return Math.round(volume / PulseAudio.NormalVolume * 100.0);
     }
 
-    GridLayout {
+       function toVolume(percent) {
+        return percent * PulseAudio.NormalVolume / 100
+        //return Math.round(volume / PulseAudio.NormalVolume * 100.0);
+    }
+
+   // compactRepresentation: CompactIcon{}
+
+ //fullRepresentation: compactRepresentation
+    fullRepresentation: GridLayout {
         id: gridLayout
+        Layout.minimumWidth: gridLayout.implicitWidth
+        Layout.minimumHeight: gridLayout.implicitHeight    
         flow: useVerticalLayout? GridLayout.TopToBottom : GridLayout.LeftToRight
         anchors.fill: parent
 
         Repeater {
+            id: repeater_bt
             model: filteredModel
 
+            //delegate: PC.ToolButton { 
             delegate: QtControls.ToolButton {
                 readonly property var device: model.PulseObject
                 readonly property var currentPort: model.Ports[ActivePortIndex]
@@ -288,14 +102,22 @@ PlasmoidItem {
                 enabled: currentPort !== null
 
                 text: labeling !== 2 ? currentDescription + (device.muted ? " (muted)" : "") : ""
-                icon.name: labeling !== 1 ? formFactorIcon(device, currentPort, defaultIconName) : ""
+                icon.name: labeling !== 1 ? getIcon(device, currentPort, model.Description) : ""
 
                 checkable: true
                 autoExclusive: true
 
-                QtControls.ToolTip {
-                    visible: hovered
-                    text: currentDescription
+                hoverEnabled: true
+                onHoveredChanged: () =>  {
+                    main.currentDeviceHovered = hovered == false ? null: tab.device
+                }
+
+                PlasmaCore.ToolTipArea {
+                    id: toolTip
+                    anchors.fill: parent
+                    mainText: tab.currentDescription + (tab.device.muted ? " (muted)" : "")
+                    subText: i18n("Volume at %1%", volumePercent(tab.device.volume));
+                    textFormat: Text.PlainText
                 }
 
                 Layout.fillHeight: true
@@ -308,8 +130,61 @@ PlasmoidItem {
                     value: device.default
                 }
 
-                onClicked: {
-                    device.default = true
+                Shape {
+                    id: ms
+                    width: parent.width
+                    height: parent.height
+                    property int offset: 5
+                    ShapePath {
+                        strokeWidth: 2
+                        strokeColor: "red"
+                        startX: ms.offset; startY: ms.offset
+                        PathSvg { path: "L " + ( ms.width - ms.offset ) + " " + ( ms.height - ms.offset ) + " z" }
+                    }
+                    visible: model.Muted
+                }
+
+                MouseArea {
+                    property int wheelDelta: 0
+                    anchors.fill: parent
+                    //hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                    onPressed: (mouse) => {
+                        if (mouse.button == Qt.LeftButton) {
+                            device.default = true
+                        }
+                        else if (mouse.button == Qt.MiddleButton) {
+                            model.Muted = !model.Muted
+                        }
+                    }
+                    onWheel: wheel => {
+                        var vol = volumePercent(device.volume)
+                        const delta = (wheel.inverted ? -1 : 1) * (wheel.angleDelta.y ? wheel.angleDelta.y : -wheel.angleDelta.x);
+                        wheelDelta += delta;
+                        // Magic number 120 for common "one click"
+                        // See: https://qt-project.org/doc/qt-5/qml-qtquick-wheelevent.html#angleDelta-prop
+                        while (wheelDelta >= 120) {
+                            wheelDelta -= 120;
+                            if (wheel.modifiers & Qt.ShiftModifier) {
+                                vol += 1
+                            } else {
+                                vol += 5
+                            }
+                            vol = Math.min(vol,100)
+                        }
+                        while (wheelDelta <= -120) {
+                            wheelDelta += 120;
+                            if (wheel.modifiers & Qt.ShiftModifier) {
+                                vol -= 1
+                            } else {
+                                vol -= 5
+                            }
+                            //Math.max(vol,0) //does it not works with negative numbers?
+                            if(vol < 0) { vol = 0 }
+                        }
+                        device.volume = toVolume(vol)
+                        model.Muted = vol == 0
+                    }
                 }
             }
         }

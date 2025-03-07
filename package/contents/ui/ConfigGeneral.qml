@@ -24,6 +24,7 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
 import org.kde.kcmutils as KCM
+import org.kde.kirigamiaddons.formcard as FormCard
 
 import org.kde.plasma.private.volume 0.1
 
